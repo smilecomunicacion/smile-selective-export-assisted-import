@@ -1,12 +1,14 @@
-# SMiLE Basic Web Coding Guidelines
+# SMiLE Assisted Import Coding Guidelines
 
 ## Scope
 These rules apply to every file in this repository unless a subdirectory contains its own `AGENTS.md` file.
 
 ## Project context
-- SMiLE Basic Web is a WordPress plugin that centralizes several features. At this stage we focus on the advanced contact form functionality while keeping the codebase ready to host additional features in the future.
-- The plugin must support multiple custom contact forms. Each form has its own custom field definitions and visual appearance, while SMTP and reCAPTCHA settings remain global for the entire site.
-- Provide admin interfaces to create, edit, and delete forms and to customize their appearance.
+- SMiLE Assisted Import is a WordPress plugin built to complement the SMiLE Selective Export tool. Its purpose is to import JSON packages containing pages, synced patterns (wp_block), and referenced media, ensuring the migrated content is fully functional on the target site.
+- The plugin automatically downloads and registers media files in the WordPress Media Library, rewrites URLs from the source site to the destination site, and preserves the relationship between pages and their synced patterns.
+- A key feature is the pattern reference remapping: when a page includes a synced pattern ({"ref":ID}), the importer replaces the original IDs with the newly created IDs on the destination site, preventing the common error “The block has been deleted or is unavailable.”
+- The plugin provides an admin interface under the Tools menu, where administrators can upload JSON packages exported from another WordPress installation. The import process is automated and provides a detailed report of created, updated, and skipped items.
+- The codebase is designed to be extensible, allowing future improvements such as support for template parts, navigation menus, or additional post types without breaking the current workflow.
 
 ## General engineering rules
 - Follow current [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/) and best practices in PHP, JavaScript, and CSS.

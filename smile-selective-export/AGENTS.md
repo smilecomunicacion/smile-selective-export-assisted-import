@@ -1,12 +1,14 @@
-# SMiLE Basic Web Coding Guidelines
+# SMiLE Selective Export Coding Guidelines
 
 ## Scope
 These rules apply to every file in this repository unless a subdirectory contains its own `AGENTS.md` file.
 
 ## Project context
-- SMiLE Basic Web is a WordPress plugin that centralizes several features. At this stage we focus on the advanced contact form functionality while keeping the codebase ready to host additional features in the future.
-- The plugin must support multiple custom contact forms. Each form has its own custom field definitions and visual appearance, while SMTP and reCAPTCHA settings remain global for the entire site.
-- Provide admin interfaces to create, edit, and delete forms and to customize their appearance.
+- SMiLE Selective Export is a WordPress plugin designed to simplify content migration between sites. Its primary goal is to export selected pages along with their synced patterns (wp_block) and referenced media files into a single JSON package.
+- The plugin ensures that when a page includes synced patterns, those patterns are automatically detected and included in the export, avoiding the common issue of missing blocks after import.
+- Each export package contains: the selected pages, any referenced synced patterns, and the list of media assets used. This makes the migration pipeline more reliable and eliminates dependency on the source site once the package is imported.
+- The plugin provides an admin interface under the Tools menu, where administrators can select specific pages to export. The system then generates a clean JSON file ready to be imported on another WordPress installation.
+- The codebase is structured to remain extensible, so in future versions additional export options (such as menus, template parts, or custom post types) can be added without reworking the foundation.
 
 ## General engineering rules
 - Follow current [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/) and best practices in PHP, JavaScript, and CSS.
