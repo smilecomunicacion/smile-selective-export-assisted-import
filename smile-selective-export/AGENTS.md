@@ -15,6 +15,8 @@ These rules apply to every file in this repository unless a subdirectory contain
 - Generate complete, production-ready code. Do not provide partial implementations or placeholders.
 - Preserve existing functionality unless a change is required to add the requested features or to fix an issue. If you remove code, state the technical reason in the PR description.
 - Avoid introducing naming collisions. Prefix all new identifiers (functions, classes, hooks, settings, files, etc.) with `smslxpt_`.
+- The text domain used for internationalization and translation is smile-assisted-import.
+- The text domain used for internationalization and translation is smile-selective-export.
 - Never rename existing identifiers unless required to fix a bug or to prevent conflicts. If renaming is unavoidable, document the reason in the PR body and reference the affected files and lines.
 - Use vanilla JavaScript instead of jQuery.
 - Implement AJAX when asynchronous behavior is required.
