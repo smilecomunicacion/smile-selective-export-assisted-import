@@ -4,6 +4,8 @@
  * Description: Import pages and their synced patterns from a SMiLE JSON package, download attachments, and rewrite URLs.
  * Version: 1.0.2
  * Author: Smile
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: smile-assisted-import
  *
  * @package smile-assisted-import
