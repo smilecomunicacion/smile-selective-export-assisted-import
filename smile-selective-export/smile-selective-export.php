@@ -62,8 +62,10 @@ function smslxpt_handle_export_download() {
 		wp_die( esc_html__( 'Security check failed.', 'smile-selective-export' ) );
 	}
 
-	$selected = isset( $_POST['smslxpt_pages'] ) ? (array) $_POST['smslxpt_pages'] : array();
-	$page_ids = array();
+$selected_raw = isset( $_POST['smslxpt_pages'] ) ? wp_unslash( $_POST['smslxpt_pages'] ) : array();
+$selected_raw = is_array( $selected_raw ) ? $selected_raw : array( $selected_raw );
+$selected      = array_map( 'absint', $selected_raw );
+$page_ids = array();
 
 	foreach ( $selected as $id ) {
 		$id = absint( $id );
