@@ -1,4 +1,5 @@
 === SMiLE Assisted Import ===
+Automates SMiLE package imports with media handling, URL rewriting, and synced pattern remapping.
 Contributors: smilecomunicacion
 Tags: import, migration, patterns, media
 Requires at least: 6.3
