@@ -23,20 +23,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  *  Admin menu
  * -------------------------------------------------------------------
 */
-add_action( 'admin_menu', 'smile_v6_export_admin_menu' );
+add_action( 'admin_menu', 'smslxpt_export_admin_menu' );
 
 /**
  * Register admin page under Tools.
  *
  * @return void
  */
-function smile_v6_export_admin_menu() {
+function smslxpt_export_admin_menu() {
 	add_management_page(
-                esc_html__( 'SMiLE Selective Export', 'smile-selective-export' ),
-                esc_html__( 'SMiLE Selective Export', 'smile-selective-export' ),
+		esc_html__( 'SMiLE Selective Export', 'smile-selective-export' ),
+		esc_html__( 'SMiLE Selective Export', 'smile-selective-export' ),
 		'manage_options',
 		'smile-selective-export',
-		'smile_v6_render_export_page'
+		'smslxpt_render_export_page'
 	);
 }
 
@@ -45,24 +45,24 @@ function smile_v6_export_admin_menu() {
  *  Admin-post handler (download JSON without rendering admin)
  * -------------------------------------------------------------------
 */
-add_action( 'admin_post_smile_v6_export', 'smile_v6_handle_export_download' );
+add_action( 'admin_post_smslxpt_export', 'smslxpt_handle_export_download' );
 
 /**
  * Handle export submission and stream pure JSON to the browser.
  *
  * @return void
  */
-function smile_v6_handle_export_download() {
+function smslxpt_handle_export_download() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-                wp_die( esc_html__( 'You do not have permission to export.', 'smile-selective-export' ) );
+		wp_die( esc_html__( 'You do not have permission to export.', 'smile-selective-export' ) );
 	}
 
-	$nonce = isset( $_POST['smile_v6_export_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['smile_v6_export_nonce'] ) ) : '';
-	if ( ! wp_verify_nonce( $nonce, 'smile_v6_export_action' ) ) {
-                wp_die( esc_html__( 'Security check failed.', 'smile-selective-export' ) );
+	$nonce = isset( $_POST['smslxpt_export_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['smslxpt_export_nonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'smslxpt_export_action' ) ) {
+		wp_die( esc_html__( 'Security check failed.', 'smile-selective-export' ) );
 	}
 
-	$selected = isset( $_POST['smile_v6_pages'] ) ? (array) $_POST['smile_v6_pages'] : array();
+	$selected = isset( $_POST['smslxpt_pages'] ) ? (array) $_POST['smslxpt_pages'] : array();
 	$page_ids = array();
 
 	foreach ( $selected as $id ) {
@@ -73,10 +73,10 @@ function smile_v6_handle_export_download() {
 	}
 
 	if ( empty( $page_ids ) ) {
-                wp_die( esc_html__( 'No pages selected.', 'smile-selective-export' ) );
+		wp_die( esc_html__( 'No pages selected.', 'smile-selective-export' ) );
 	}
 
-	$export = smile_v6_build_export_package( array_values( $page_ids ) );
+	$export = smslxpt_build_export_package( array_values( $page_ids ) );
 	if ( is_wp_error( $export ) ) {
 		wp_die( esc_html( $export->get_error_message() ) );
 	}
@@ -106,7 +106,7 @@ function smile_v6_handle_export_download() {
  * @param string $content Post content.
  * @return array
  */
-function smile_v6_extract_wp_block_refs( $content ) {
+function smslxpt_extract_wp_block_refs( $content ) {
 	$refs = array();
 
 	// Soporta: <!-- wp:block {"ref":123} /--> y <!-- wp:block {"ref":123} -->.
@@ -129,7 +129,7 @@ function smile_v6_extract_wp_block_refs( $content ) {
  * @param string $content Post content.
  * @return array{ids: int[], urls: string[]}
  */
-function smile_v6_extract_media( $content ) {
+function smslxpt_extract_media( $content ) {
 	$ids  = array();
 	$urls = array();
 
@@ -164,7 +164,7 @@ function smile_v6_extract_media( $content ) {
  * @param WP_Post $post Post object.
  * @return array
  */
-function smile_v6_serialize_post( $post ) {
+function smslxpt_serialize_post( $post ) {
 	$slug = (string) $post->post_name;
 	if ( '' === $slug ) {
 		$slug = sanitize_title( (string) $post->post_title );
@@ -183,7 +183,7 @@ function smile_v6_serialize_post( $post ) {
 		'post_content' => $post->post_content,
 		'post_excerpt' => $post->post_excerpt,
 		'menu_order'   => (int) $post->menu_order,
-		'meta'         => smile_v6_collect_meta( $post->ID ),
+                'meta'         => smslxpt_collect_meta( $post->ID ),
 	);
 }
 
@@ -193,7 +193,7 @@ function smile_v6_serialize_post( $post ) {
  * @param int $post_id Post ID.
  * @return array
  */
-function smile_v6_collect_meta( $post_id ) {
+function smslxpt_collect_meta( $post_id ) {
 	$all = get_post_meta( $post_id );
 	$out = array();
 
@@ -219,7 +219,7 @@ function smile_v6_collect_meta( $post_id ) {
  *
  * @return void
  */
-function smile_v6_render_export_page() {
+function smslxpt_render_export_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
                 wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-selective-export' ) );
 	}
@@ -240,8 +240,8 @@ function smile_v6_render_export_page() {
 	<div class="wrap">
         <h1><?php esc_html_e( 'SMiLE Selective Export', 'smile-selective-export' ); ?></h1>
 		<form method="post" action="<?php echo $action_url; ?>">
-			<input type="hidden" name="action" value="smile_v6_export" />
-			<?php wp_nonce_field( 'smile_v6_export_action', 'smile_v6_export_nonce' ); ?>
+                        <input type="hidden" name="action" value="smslxpt_export" />
+                        <?php wp_nonce_field( 'smslxpt_export_action', 'smslxpt_export_nonce' ); ?>
 
                     <p><?php esc_html_e( 'Select the pages to export. The package will include any synced patterns (wp_block) and media referenced by those pages.', 'smile-selective-export' ); ?></p>
 
@@ -249,7 +249,7 @@ function smile_v6_render_export_page() {
 				<?php foreach ( $pages as $pid ) : ?>
 					<li>
 						<label>
-							<input type="checkbox" name="smile_v6_pages[]" value="<?php echo esc_attr( (string) $pid ); ?>" />
+                                                        <input type="checkbox" name="smslxpt_pages[]" value="<?php echo esc_attr( (string) $pid ); ?>" />
 							<?php
 							$title = get_the_title( $pid );
 							echo esc_html( $title ) . ' (ID ' . (int) $pid . ')';
@@ -279,12 +279,12 @@ function smile_v6_render_export_page() {
  * @param int[] $page_ids Page IDs.
  * @return array|\WP_Error
  */
-function smile_v6_build_export_package( $page_ids ) {
+function smslxpt_build_export_package( $page_ids ) {
 	$page_ids = array_map( 'absint', (array) $page_ids );
 	$page_ids = array_filter( $page_ids );
 
 	if ( empty( $page_ids ) ) {
-            return new WP_Error( 'smile_v6_no_pages', esc_html__( 'No pages selected.', 'smile-selective-export' ) );
+		return new WP_Error( 'smslxpt_no_pages', esc_html__( 'No pages selected.', 'smile-selective-export' ) );
 	}
 
 	$posts       = array();
@@ -297,10 +297,10 @@ function smile_v6_build_export_package( $page_ids ) {
 	foreach ( $page_ids as $pid ) {
 		$post = get_post( $pid );
 		if ( $post && 'page' === $post->post_type ) {
-			$serialized    = smile_v6_serialize_post( $post );
+			$serialized    = smslxpt_serialize_post( $post );
 			$posts[ $pid ] = $serialized;
 
-			$media_from_page = smile_v6_extract_media( $post->post_content );
+			$media_from_page = smslxpt_extract_media( $post->post_content );
 			foreach ( $media_from_page['ids'] as $mid ) {
 				$media_ids[ $mid ] = $mid;
 			}
@@ -308,7 +308,7 @@ function smile_v6_build_export_package( $page_ids ) {
 				$media_urls[ $u ] = $u;
 			}
 
-			$refs = smile_v6_extract_wp_block_refs( $post->post_content );
+			$refs = smslxpt_extract_wp_block_refs( $post->post_content );
 			foreach ( $refs as $bid ) {
 				$blocks[ $bid ] = $bid;
 			}
@@ -329,10 +329,10 @@ function smile_v6_build_export_package( $page_ids ) {
 		$blocks = array();
 
 		foreach ( $ref_posts as $bpost ) {
-			$serialized           = smile_v6_serialize_post( $bpost );
+			$serialized           = smslxpt_serialize_post( $bpost );
 			$blocks[ $bpost->ID ] = $serialized;
 
-			$m = smile_v6_extract_media( $bpost->post_content );
+			$m = smslxpt_extract_media( $bpost->post_content );
 			foreach ( $m['ids'] as $mid ) {
 				$media_ids[ $mid ] = $mid;
 			}
