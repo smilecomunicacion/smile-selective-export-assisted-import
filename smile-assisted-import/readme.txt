@@ -1,6 +1,6 @@
 === SMiLE Assisted Import ===
 Contributors: smilecomunicacion
-Tags: import, migration, patterns, media, wordpress
+Tags: import, migration, patterns, media
 Requires at least: 6.3
 Tested up to: 6.8
 Stable tag: 1.0.2
