@@ -4,6 +4,8 @@
  * Description: Export selected pages with their synced patterns (wp_block) and referenced media into a JSON package.
  * Version: 1.0.2
  * Author: Smile
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: smile-selective-export
  *
  * @package smile-selective-export
