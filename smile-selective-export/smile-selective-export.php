@@ -237,11 +237,11 @@ function smslxpt_render_export_page() {
 		)
 	);
 
-	$action_url = esc_url( admin_url( 'admin-post.php' ) );
+       $action_url = admin_url( 'admin-post.php' );
 	?>
 	<div class="wrap">
         <h1><?php esc_html_e( 'SMiLE Selective Export', 'smile-selective-export' ); ?></h1>
-		<form method="post" action="<?php echo $action_url; ?>">
+               <form method="post" action="<?php echo esc_url( $action_url ); ?>">
                         <input type="hidden" name="action" value="smslxpt_export" />
                         <?php wp_nonce_field( 'smslxpt_export_action', 'smslxpt_export_nonce' ); ?>
 
