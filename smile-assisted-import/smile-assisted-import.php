@@ -59,15 +59,18 @@ function smssmpt_render_import_page() {
 	$report = array();
 
 	if ( isset( $_POST['smssmpt_import_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smssmpt_import_nonce'] ) ), 'smssmpt_import_action' ) ) {
-		if ( ! empty( $_FILES['smssmpt_package']['tmp_name'] ) && UPLOAD_ERR_OK === (int) $_FILES['smssmpt_package']['error'] ) {
+		if ( isset( $_FILES['smssmpt_package']['tmp_name'], $_FILES['smssmpt_package']['error'] ) ) {
+			if ( ! empty( $_FILES['smssmpt_package']['tmp_name'] ) && UPLOAD_ERR_OK === (int) $_FILES['smssmpt_package']['error'] ) {
+				$json = file_get_contents( $_FILES['smssmpt_package']['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown.
+				$pkg  = json_decode( $json, true );
 
-			$json = file_get_contents( $_FILES['smssmpt_package']['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown.
-			$pkg  = json_decode( $json, true );
-
-			if ( ! is_array( $pkg ) || empty( $pkg['version'] ) ) {
-				$report['error'] = esc_html__( 'Invalid package format.', 'smile-assisted-import' );
+				if ( ! is_array( $pkg ) || empty( $pkg['version'] ) ) {
+					$report['error'] = esc_html__( 'Invalid package format.', 'smile-assisted-import' );
+				} else {
+					$report = smssmpt_process_package( $pkg );
+				}
 			} else {
-				$report = smssmpt_process_package( $pkg );
+				$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
 			}
 		} else {
 			$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
