@@ -23,20 +23,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  *  Admin menu
  * -------------------------------------------------------------------
 */
-add_action( 'admin_menu', 'smile_v6_import_admin_menu' );
+add_action( 'admin_menu', 'smssmpt_import_admin_menu' );
 
 /**
  * Register admin page under Tools.
  *
  * @return void
  */
-function smile_v6_import_admin_menu() {
+function smssmpt_import_admin_menu() {
 	add_management_page(
 		esc_html__( 'SMiLE Assisted Import', 'smile-assisted-import' ),
 		esc_html__( 'SMiLE Assisted Import', 'smile-assisted-import' ),
 		'manage_options',
 		'smile-assisted-import',
-		'smile_v6_render_import_page'
+		'smssmpt_render_import_page'
 	);
 }
 
@@ -51,23 +51,23 @@ function smile_v6_import_admin_menu() {
  *
  * @return void
  */
-function smile_v6_render_import_page() {
+function smssmpt_render_import_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-assisted-import' ) );
 	}
 
 	$report = array();
 
-	if ( isset( $_POST['smile_v6_import_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smile_v6_import_nonce'] ) ), 'smile_v6_import_action' ) ) {
-		if ( ! empty( $_FILES['smile_v6_package']['tmp_name'] ) && UPLOAD_ERR_OK === (int) $_FILES['smile_v6_package']['error'] ) {
+	if ( isset( $_POST['smssmpt_import_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smssmpt_import_nonce'] ) ), 'smssmpt_import_action' ) ) {
+		if ( ! empty( $_FILES['smssmpt_package']['tmp_name'] ) && UPLOAD_ERR_OK === (int) $_FILES['smssmpt_package']['error'] ) {
 
-			$json = file_get_contents( $_FILES['smile_v6_package']['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown.
+			$json = file_get_contents( $_FILES['smssmpt_package']['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown.
 			$pkg  = json_decode( $json, true );
 
 			if ( ! is_array( $pkg ) || empty( $pkg['version'] ) ) {
 				$report['error'] = esc_html__( 'Invalid package format.', 'smile-assisted-import' );
 			} else {
-				$report = smile_v6_process_package( $pkg );
+				$report = smssmpt_process_package( $pkg );
 			}
 		} else {
 			$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
@@ -79,13 +79,13 @@ function smile_v6_render_import_page() {
 		<h1><?php esc_html_e( 'SMiLE Assisted Import', 'smile-assisted-import' ); ?></h1>
 
 		<form method="post" enctype="multipart/form-data">
-			<?php wp_nonce_field( 'smile_v6_import_action', 'smile_v6_import_nonce' ); ?>
+			<?php wp_nonce_field( 'smssmpt_import_action', 'smssmpt_import_nonce' ); ?>
 
 			<p><?php esc_html_e( 'Upload a SMiLE JSON package exported from the source site. The importer will download attachments, rewrite URLs to this site, create synced patterns (wp_block), remap pattern refs, and then import pages.', 'smile-assisted-import' ); ?></p>
 
 			<p>
-				<label for="smile_v6_package"><?php esc_html_e( 'JSON package', 'smile-assisted-import' ); ?></label><br />
-				<input type="file" id="smile_v6_package" name="smile_v6_package" accept="application/json" />
+				<label for="smssmpt_package"><?php esc_html_e( 'JSON package', 'smile-assisted-import' ); ?></label><br />
+				<input type="file" id="smssmpt_package" name="smssmpt_package" accept="application/json" />
 			</p>
 
 			<p>
@@ -101,7 +101,6 @@ function smile_v6_render_import_page() {
 	</div>
 	<?php
 }
-
 /*
  * -------------------------------------------------------------------
  *  Package processing
@@ -115,7 +114,7 @@ function smile_v6_render_import_page() {
  * @param array $pkg Package data.
  * @return array
  */
-function smile_v6_process_package( $pkg ) {
+function smssmpt_process_package( $pkg ) {
 	$origin = isset( $pkg['site_origin'] ) ? (string) $pkg['site_origin'] : '';
 	$to     = trailingslashit( home_url( '/' ) );
 
@@ -123,9 +122,9 @@ function smile_v6_process_package( $pkg ) {
 	$map_blocks    = array(); // slug => new ID (still useful).
 	$map_block_ids = array(); // OLD block ID => NEW block ID.
 
-	$media_report  = smile_v6_import_media( $pkg, $origin, $to, $map_urls );
-	$blocks_report = smile_v6_import_posts( $pkg, 'wp_blocks', 'wp_block', $origin, $to, $map_urls, $map_blocks, $map_block_ids );
-	$pages_report  = smile_v6_import_posts( $pkg, 'pages', 'page', $origin, $to, $map_urls, $map_blocks, $map_block_ids );
+	$media_report  = smssmpt_import_media( $pkg, $origin, $to, $map_urls );
+	$blocks_report = smssmpt_import_posts( $pkg, 'wp_blocks', 'wp_block', $origin, $to, $map_urls, $map_blocks, $map_block_ids );
+	$pages_report  = smssmpt_import_posts( $pkg, 'pages', 'page', $origin, $to, $map_urls, $map_blocks, $map_block_ids );
 
 	return array(
 		'media'  => $media_report,
@@ -143,7 +142,7 @@ function smile_v6_process_package( $pkg ) {
  * @param array  $map_urls  URL map.
  * @return array
  */
-function smile_v6_import_media( $pkg, $origin, $to, &$map_urls ) {
+function smssmpt_import_media( $pkg, $origin, $to, &$map_urls ) {
 	if ( empty( $pkg['media'] ) || ! is_array( $pkg['media'] ) ) {
 		return array( 'downloaded' => 0 );
 	}
@@ -220,7 +219,7 @@ function smile_v6_import_media( $pkg, $origin, $to, &$map_urls ) {
  * @param array  $map     Map old => new for specific media.
  * @return string
  */
-function smile_v6_rewrite_urls( $content, $origin, $to, $map ) {
+function smssmpt_rewrite_urls( $content, $origin, $to, $map ) {
 	if ( ! empty( $map ) ) {
 		$content = strtr( $content, $map );
 	}
@@ -245,7 +244,7 @@ function smile_v6_rewrite_urls( $content, $origin, $to, $map ) {
  * @param array  $map_block_ids OLD block ID => NEW block ID.
  * @return string
  */
-function smile_v6_remap_block_refs( $content, $map_block_ids ) {
+function smssmpt_remap_block_refs( $content, $map_block_ids ) {
 	if ( empty( $map_block_ids ) || '' === $content ) {
 		return $content;
 	}
@@ -283,7 +282,7 @@ function smile_v6_remap_block_refs( $content, $map_block_ids ) {
  * @param array  $map_block_ids  Block ID map (old => new).
  * @return array
  */
-function smile_v6_import_posts( $pkg, $key, $post_type, $origin, $to, &$map_urls, &$map_blocks, &$map_block_ids ) {
+function smssmpt_import_posts( $pkg, $key, $post_type, $origin, $to, &$map_urls, &$map_blocks, &$map_block_ids ) {
 	$report = array(
 		'created' => array(),
 		'updated' => array(),
@@ -310,11 +309,11 @@ function smile_v6_import_posts( $pkg, $key, $post_type, $origin, $to, &$map_urls
 		}
 
 		// 1) Remap media URLs.
-		$content = smile_v6_rewrite_urls( $content, $origin, $to, $map_urls );
+		$content = smssmpt_rewrite_urls( $content, $origin, $to, $map_urls );
 
 		// 2) Remap pattern refs (solo en páginas).
 		if ( 'page' === $post_type ) {
-			$content = smile_v6_remap_block_refs( $content, $map_block_ids );
+			$content = smssmpt_remap_block_refs( $content, $map_block_ids );
 		}
 
 		if ( 'wp_block' === $post_type ) {
@@ -361,7 +360,7 @@ function smile_v6_import_posts( $pkg, $key, $post_type, $origin, $to, &$map_urls
 
 			// Meta.
 			if ( ! empty( $data['meta'] ) && is_array( $data['meta'] ) ) {
-				smile_v6_restore_meta( $new_id, $data['meta'] );
+				smssmpt_restore_meta( $new_id, $data['meta'] );
 			}
 		} else {
 			$post_arr = array(
@@ -402,7 +401,7 @@ function smile_v6_import_posts( $pkg, $key, $post_type, $origin, $to, &$map_urls
 
 			// Meta.
 			if ( ! empty( $data['meta'] ) && is_array( $data['meta'] ) ) {
-				smile_v6_restore_meta( $new_id, $data['meta'] );
+				smssmpt_restore_meta( $new_id, $data['meta'] );
 			}
 		}
 	}
@@ -417,7 +416,7 @@ function smile_v6_import_posts( $pkg, $key, $post_type, $origin, $to, &$map_urls
  * @param array $meta    Meta array (key => [values]).
  * @return void
  */
-function smile_v6_restore_meta( $post_id, $meta ) {
+function smssmpt_restore_meta( $post_id, $meta ) {
 	foreach ( $meta as $key => $values ) {
 		$key = sanitize_key( (string) $key );
 		delete_post_meta( $post_id, $key );
