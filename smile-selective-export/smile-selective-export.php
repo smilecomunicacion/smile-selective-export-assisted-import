@@ -4,7 +4,7 @@
  * Description: Export selected pages with their synced patterns (wp_block) and referenced media into a JSON package.
  * Version: 1.0.2
  * Author: Smile
- * Text Domain: smile-web
+ * Text Domain: smile-selective-export
  *
  * @package smile-selective-export
  */
@@ -32,8 +32,8 @@ add_action( 'admin_menu', 'smile_v6_export_admin_menu' );
  */
 function smile_v6_export_admin_menu() {
 	add_management_page(
-		esc_html__( 'SMiLE Selective Export', 'smile-web' ),
-		esc_html__( 'SMiLE Selective Export', 'smile-web' ),
+                esc_html__( 'SMiLE Selective Export', 'smile-selective-export' ),
+                esc_html__( 'SMiLE Selective Export', 'smile-selective-export' ),
 		'manage_options',
 		'smile-selective-export',
 		'smile_v6_render_export_page'
@@ -54,12 +54,12 @@ add_action( 'admin_post_smile_v6_export', 'smile_v6_handle_export_download' );
  */
 function smile_v6_handle_export_download() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( esc_html__( 'You do not have permission to export.', 'smile-web' ) );
+                wp_die( esc_html__( 'You do not have permission to export.', 'smile-selective-export' ) );
 	}
 
 	$nonce = isset( $_POST['smile_v6_export_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['smile_v6_export_nonce'] ) ) : '';
 	if ( ! wp_verify_nonce( $nonce, 'smile_v6_export_action' ) ) {
-		wp_die( esc_html__( 'Security check failed.', 'smile-web' ) );
+                wp_die( esc_html__( 'Security check failed.', 'smile-selective-export' ) );
 	}
 
 	$selected = isset( $_POST['smile_v6_pages'] ) ? (array) $_POST['smile_v6_pages'] : array();
@@ -73,7 +73,7 @@ function smile_v6_handle_export_download() {
 	}
 
 	if ( empty( $page_ids ) ) {
-		wp_die( esc_html__( 'No pages selected.', 'smile-web' ) );
+                wp_die( esc_html__( 'No pages selected.', 'smile-selective-export' ) );
 	}
 
 	$export = smile_v6_build_export_package( array_values( $page_ids ) );
@@ -221,7 +221,7 @@ function smile_v6_collect_meta( $post_id ) {
  */
 function smile_v6_render_export_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-web' ) );
+                wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-selective-export' ) );
 	}
 
 	$pages = get_posts(
@@ -238,12 +238,12 @@ function smile_v6_render_export_page() {
 	$action_url = esc_url( admin_url( 'admin-post.php' ) );
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'SMiLE Selective Export', 'smile-web' ); ?></h1>
+        <h1><?php esc_html_e( 'SMiLE Selective Export', 'smile-selective-export' ); ?></h1>
 		<form method="post" action="<?php echo $action_url; ?>">
 			<input type="hidden" name="action" value="smile_v6_export" />
 			<?php wp_nonce_field( 'smile_v6_export_action', 'smile_v6_export_nonce' ); ?>
 
-			<p><?php esc_html_e( 'Select the pages to export. The package will include any synced patterns (wp_block) and media referenced by those pages.', 'smile-web' ); ?></p>
+                    <p><?php esc_html_e( 'Select the pages to export. The package will include any synced patterns (wp_block) and media referenced by those pages.', 'smile-selective-export' ); ?></p>
 
 			<ul style="max-height:320px;overflow:auto;border:1px solid #ccd0d4;padding:10px;">
 				<?php foreach ( $pages as $pid ) : ?>
@@ -260,7 +260,7 @@ function smile_v6_render_export_page() {
 			</ul>
 
 			<p>
-				<button type="submit" class="button button-primary"><?php esc_html_e( 'Export JSON package', 'smile-web' ); ?></button>
+                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Export JSON package', 'smile-selective-export' ); ?></button>
 			</p>
 		</form>
 	</div>
@@ -284,7 +284,7 @@ function smile_v6_build_export_package( $page_ids ) {
 	$page_ids = array_filter( $page_ids );
 
 	if ( empty( $page_ids ) ) {
-		return new WP_Error( 'smile_v6_no_pages', esc_html__( 'No pages selected.', 'smile-web' ) );
+            return new WP_Error( 'smile_v6_no_pages', esc_html__( 'No pages selected.', 'smile-selective-export' ) );
 	}
 
 	$posts       = array();
