@@ -1,5 +1,5 @@
 === SMiLE Selective Export ===
-Contributors: smile
+Contributors: smilecomunicacion
 Tags: export, migration, blocks, patterns, media
 Requires at least: 6.3
 Tested up to: 6.8
