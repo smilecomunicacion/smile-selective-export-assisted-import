@@ -1,0 +1,63 @@
+# Copyright (C) 2025 smilecomunicacion
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: SMiLE Selective Export 1.0.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/smile-selective-export\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-10-03T09:35:40+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: smile-selective-export\n"
+
+#. Plugin Name of the plugin
+#: smile-selective-export.php
+#: smile-selective-export.php:41
+#: smile-selective-export.php:42
+#: smile-selective-export.php:249
+msgid "SMiLE Selective Export"
+msgstr ""
+
+#. Description of the plugin
+#: smile-selective-export.php
+msgid "Export selected pages with their synced patterns (wp_block) and referenced media into a JSON package."
+msgstr ""
+
+#. Author of the plugin
+#: smile-selective-export.php
+msgid "smilecomunicacion"
+msgstr ""
+
+#. Author URI of the plugin
+#: smile-selective-export.php
+msgid "https://smilecomunicacion.com/"
+msgstr ""
+
+#: smile-selective-export.php:63
+msgid "You do not have permission to export."
+msgstr ""
+
+#: smile-selective-export.php:68
+msgid "Security check failed."
+msgstr ""
+
+#: smile-selective-export.php:84
+#: smile-selective-export.php:295
+msgid "No pages selected."
+msgstr ""
+
+#: smile-selective-export.php:232
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: smile-selective-export.php:254
+msgid "Select the pages to export. The package will include any synced patterns (wp_block) and media referenced by those pages."
+msgstr ""
+
+#: smile-selective-export.php:271
+msgid "Export JSON package"
+msgstr ""

@@ -1,5 +1,4 @@
 === SMiLE Assisted Import ===
-Automates SMiLE package imports with media handling, URL rewriting, and synced pattern remapping.
 Contributors: smilecomunicacion
 Tags: import, migration, patterns, media
 Requires at least: 6.3
@@ -8,6 +7,8 @@ Stable tag: 1.0.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Automates SMiLE package imports with media handling, URL rewriting, and synced pattern remapping.
 
 == Description ==
 SMiLE Assisted Import is the companion importer for the SMiLE Selective Export tool. It restores pages, synced block patterns, and referenced media from a SMiLE JSON package so that the migrated content works out of the box on the destination site. The plugin downloads remote assets, remaps pattern references, rewrites links to match the current domain, and produces a detailed report for site administrators.
