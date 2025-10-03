@@ -125,6 +125,7 @@ function smssmpt_render_import_page() {
 	</div>
 	<?php
 }
+
 /*
  * -------------------------------------------------------------------
  *  Package processing
@@ -201,13 +202,13 @@ function smssmpt_import_media( $pkg, $origin, $to, &$map_urls ) {
 		}
 
 		$file_array = array(
-			'name'     => wp_basename( parse_url( $url, PHP_URL_PATH ) ),
+			'name'     => wp_basename( wp_parse_url( $url, PHP_URL_PATH ) ),
 			'tmp_name' => $tmp,
 		);
 
 		$att_id = media_handle_sideload( $file_array, 0 );
 		if ( is_wp_error( $att_id ) ) {
-			@unlink( $tmp );
+			wp_delete_file( $tmp );
 			$errors[] = array(
 				'url'   => $url,
 				'error' => $att_id->get_error_message(),
