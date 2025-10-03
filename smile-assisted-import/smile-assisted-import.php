@@ -208,10 +208,16 @@ function smssmpt_import_media( $pkg, $origin, $to, &$map_urls ) {
 
 		$att_id = media_handle_sideload( $file_array, 0 );
 		if ( is_wp_error( $att_id ) ) {
-			wp_delete_file( $tmp );
+			$delete_result = wp_delete_file( $tmp );
+			$error_message = $att_id->get_error_message();
+
+			if ( is_wp_error( $delete_result ) ) {
+				$error_message .= ' Temporary file removal failed: ' . $delete_result->get_error_message();
+			}
+
 			$errors[] = array(
 				'url'   => $url,
-				'error' => $att_id->get_error_message(),
+				'error' => $error_message,
 			);
 			continue;
 		}
