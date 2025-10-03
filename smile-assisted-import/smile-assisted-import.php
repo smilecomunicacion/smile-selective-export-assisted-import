@@ -60,14 +60,35 @@ function smssmpt_render_import_page() {
 
 	if ( isset( $_POST['smssmpt_import_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['smssmpt_import_nonce'] ) ), 'smssmpt_import_action' ) ) {
 		if ( isset( $_FILES['smssmpt_package']['tmp_name'], $_FILES['smssmpt_package']['error'] ) ) {
-			if ( ! empty( $_FILES['smssmpt_package']['tmp_name'] ) && UPLOAD_ERR_OK === (int) $_FILES['smssmpt_package']['error'] ) {
-				$json = file_get_contents( $_FILES['smssmpt_package']['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown.
-				$pkg  = json_decode( $json, true );
+			$tmp_path = sanitize_text_field( wp_unslash( $_FILES['smssmpt_package']['tmp_name'] ) );
 
-				if ( ! is_array( $pkg ) || empty( $pkg['version'] ) ) {
-					$report['error'] = esc_html__( 'Invalid package format.', 'smile-assisted-import' );
+			if ( ! empty( $tmp_path ) && is_uploaded_file( $tmp_path ) && UPLOAD_ERR_OK === (int) $_FILES['smssmpt_package']['error'] ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+
+				global $wp_filesystem;
+
+				if ( ! $wp_filesystem ) {
+					WP_Filesystem();
+				}
+
+				if ( ! $wp_filesystem ) {
+					$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
 				} else {
-					$report = smssmpt_process_package( $pkg );
+					$json = $wp_filesystem->get_contents( $tmp_path );
+
+					if ( false === $json ) {
+						$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
+					}
+				}
+
+				if ( empty( $report['error'] ) ) {
+					$pkg = json_decode( $json, true );
+
+					if ( ! is_array( $pkg ) || empty( $pkg['version'] ) ) {
+						$report['error'] = esc_html__( 'Invalid package format.', 'smile-assisted-import' );
+					} else {
+						$report = smssmpt_process_package( $pkg );
+					}
 				}
 			} else {
 				$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
