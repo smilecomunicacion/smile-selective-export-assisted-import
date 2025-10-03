@@ -4,7 +4,7 @@
  * Description: Import pages and their synced patterns from a SMiLE JSON package, download attachments, and rewrite URLs.
  * Version: 1.0.2
  * Author: Smile
- * Text Domain: smile-web
+ * Text Domain: smile-assisted-import
  *
  * @package smile-assisted-import
  */
@@ -32,8 +32,8 @@ add_action( 'admin_menu', 'smile_v6_import_admin_menu' );
  */
 function smile_v6_import_admin_menu() {
 	add_management_page(
-		esc_html__( 'SMiLE Assisted Import', 'smile-web' ),
-		esc_html__( 'SMiLE Assisted Import', 'smile-web' ),
+		esc_html__( 'SMiLE Assisted Import', 'smile-assisted-import' ),
+		esc_html__( 'SMiLE Assisted Import', 'smile-assisted-import' ),
 		'manage_options',
 		'smile-assisted-import',
 		'smile_v6_render_import_page'
@@ -53,7 +53,7 @@ function smile_v6_import_admin_menu() {
  */
 function smile_v6_render_import_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-web' ) );
+		wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-assisted-import' ) );
 	}
 
 	$report = array();
@@ -65,37 +65,37 @@ function smile_v6_render_import_page() {
 			$pkg  = json_decode( $json, true );
 
 			if ( ! is_array( $pkg ) || empty( $pkg['version'] ) ) {
-				$report['error'] = esc_html__( 'Invalid package format.', 'smile-web' );
+				$report['error'] = esc_html__( 'Invalid package format.', 'smile-assisted-import' );
 			} else {
 				$report = smile_v6_process_package( $pkg );
 			}
 		} else {
-			$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-web' );
+			$report['error'] = esc_html__( 'Please upload a JSON package.', 'smile-assisted-import' );
 		}
 	}
 
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'SMiLE Assisted Import', 'smile-web' ); ?></h1>
+		<h1><?php esc_html_e( 'SMiLE Assisted Import', 'smile-assisted-import' ); ?></h1>
 
 		<form method="post" enctype="multipart/form-data">
 			<?php wp_nonce_field( 'smile_v6_import_action', 'smile_v6_import_nonce' ); ?>
 
-			<p><?php esc_html_e( 'Upload a SMiLE JSON package exported from the source site. The importer will download attachments, rewrite URLs to this site, create synced patterns (wp_block), remap pattern refs, and then import pages.', 'smile-web' ); ?></p>
+			<p><?php esc_html_e( 'Upload a SMiLE JSON package exported from the source site. The importer will download attachments, rewrite URLs to this site, create synced patterns (wp_block), remap pattern refs, and then import pages.', 'smile-assisted-import' ); ?></p>
 
 			<p>
-				<label for="smile_v6_package"><?php esc_html_e( 'JSON package', 'smile-web' ); ?></label><br />
+				<label for="smile_v6_package"><?php esc_html_e( 'JSON package', 'smile-assisted-import' ); ?></label><br />
 				<input type="file" id="smile_v6_package" name="smile_v6_package" accept="application/json" />
 			</p>
 
 			<p>
-				<button type="submit" class="button button-primary"><?php esc_html_e( 'Import package', 'smile-web' ); ?></button>
+				<button type="submit" class="button button-primary"><?php esc_html_e( 'Import package', 'smile-assisted-import' ); ?></button>
 			</p>
 		</form>
 
 		<?php if ( ! empty( $report ) ) : ?>
 			<hr />
-			<h2><?php esc_html_e( 'Import report', 'smile-web' ); ?></h2>
+			<h2><?php esc_html_e( 'Import report', 'smile-assisted-import' ); ?></h2>
 			<pre style="background:#fff;border:1px solid #ccd0d4;padding:10px;max-height:320px;overflow:auto;"><?php echo esc_html( wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); ?></pre>
 		<?php endif; ?>
 	</div>
