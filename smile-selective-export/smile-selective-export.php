@@ -62,10 +62,10 @@ function smslxpt_handle_export_download() {
 		wp_die( esc_html__( 'Security check failed.', 'smile-selective-export' ) );
 	}
 
-$selected_raw = isset( $_POST['smslxpt_pages'] ) ? wp_unslash( $_POST['smslxpt_pages'] ) : array();
-$selected_raw = is_array( $selected_raw ) ? $selected_raw : array( $selected_raw );
-$selected      = array_map( 'absint', $selected_raw );
-$page_ids = array();
+	$selected_raw = isset( $_POST['smslxpt_pages'] ) ? array_map( 'sanitize_text_field', wp_unslash( (array) $_POST['smslxpt_pages'] ) ) : array();
+	$selected_raw = is_array( $selected_raw ) ? $selected_raw : array( $selected_raw );
+	$selected     = array_map( 'absint', $selected_raw );
+	$page_ids     = array();
 
 	foreach ( $selected as $id ) {
 		$id = absint( $id );
@@ -185,7 +185,7 @@ function smslxpt_serialize_post( $post ) {
 		'post_content' => $post->post_content,
 		'post_excerpt' => $post->post_excerpt,
 		'menu_order'   => (int) $post->menu_order,
-                'meta'         => smslxpt_collect_meta( $post->ID ),
+		'meta'         => smslxpt_collect_meta( $post->ID ),
 	);
 }
 
@@ -223,7 +223,7 @@ function smslxpt_collect_meta( $post_id ) {
  */
 function smslxpt_render_export_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-                wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-selective-export' ) );
+				wp_die( esc_html__( 'You do not have permission to access this page.', 'smile-selective-export' ) );
 	}
 
 	$pages = get_posts(
@@ -237,21 +237,21 @@ function smslxpt_render_export_page() {
 		)
 	);
 
-       $action_url = admin_url( 'admin-post.php' );
+		$action_url = admin_url( 'admin-post.php' );
 	?>
 	<div class="wrap">
-        <h1><?php esc_html_e( 'SMiLE Selective Export', 'smile-selective-export' ); ?></h1>
-               <form method="post" action="<?php echo esc_url( $action_url ); ?>">
-                        <input type="hidden" name="action" value="smslxpt_export" />
-                        <?php wp_nonce_field( 'smslxpt_export_action', 'smslxpt_export_nonce' ); ?>
+		<h1><?php esc_html_e( 'SMiLE Selective Export', 'smile-selective-export' ); ?></h1>
+				<form method="post" action="<?php echo esc_url( $action_url ); ?>">
+						<input type="hidden" name="action" value="smslxpt_export" />
+						<?php wp_nonce_field( 'smslxpt_export_action', 'smslxpt_export_nonce' ); ?>
 
-                    <p><?php esc_html_e( 'Select the pages to export. The package will include any synced patterns (wp_block) and media referenced by those pages.', 'smile-selective-export' ); ?></p>
+					<p><?php esc_html_e( 'Select the pages to export. The package will include any synced patterns (wp_block) and media referenced by those pages.', 'smile-selective-export' ); ?></p>
 
 			<ul style="max-height:320px;overflow:auto;border:1px solid #ccd0d4;padding:10px;">
 				<?php foreach ( $pages as $pid ) : ?>
 					<li>
 						<label>
-                                                        <input type="checkbox" name="smslxpt_pages[]" value="<?php echo esc_attr( (string) $pid ); ?>" />
+														<input type="checkbox" name="smslxpt_pages[]" value="<?php echo esc_attr( (string) $pid ); ?>" />
 							<?php
 							$title = get_the_title( $pid );
 							echo esc_html( $title ) . ' (ID ' . (int) $pid . ')';
@@ -262,7 +262,7 @@ function smslxpt_render_export_page() {
 			</ul>
 
 			<p>
-                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Export JSON package', 'smile-selective-export' ); ?></button>
+							<button type="submit" class="button button-primary"><?php esc_html_e( 'Export JSON package', 'smile-selective-export' ); ?></button>
 			</p>
 		</form>
 	</div>
